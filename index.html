@@ -113,6 +113,7 @@ input,select{font:inherit;border:1px solid var(--bd);background:#fff;color:var(-
 .fm .fl{margin:10px 0 2px;font-size:13px;color:var(--mut)}.fm .rg{display:flex;flex-wrap:nowrap;gap:0}
 .fm .rg label{flex:1 1 auto}
 .mc{overflow-x:hidden}
+body:has(#modal:not([hidden])) #admbar,body:has(#modal:not([hidden])) #simbar,body:has(#modal:not([hidden])) #simpill{filter:brightness(.5);pointer-events:none}
 .mb:has(.mc.hmodal){align-items:flex-start;padding-top:5vh}
 #modal,#modal .mc,#modal .setw{overscroll-behavior:contain}
 @media(min-width:560px){.stb{flex-wrap:nowrap!important;gap:3px!important}.stb button{flex:0 1 auto;min-width:0;white-space:nowrap;padding-left:clamp(5px,1.3vw,12px);padding-right:clamp(5px,1.3vw,12px);font-size:clamp(11px,1.9vw,14px)}}#numpub,#vidpub{appearance:none;-webkit-appearance:none;flex:none;order:3;width:34px;height:20px;border-radius:10px;margin:2px 0 0 auto!important;cursor:pointer;background:radial-gradient(circle,#fff 8px,transparent 8.5px) no-repeat 2px center/16px 16px,#cbd5e1;transition:background-color .15s,background-position .15s}#numpub:checked,#vidpub:checked{background-position:16px center,0 0;background-color:#16a34a}#numpub:disabled,#vidpub:disabled{opacity:.45;cursor:not-allowed}.setw>.sth:first-child{margin-top:0!important}#modal{touch-action:none}#modal .mc,#modal .setw{touch-action:pan-y}html.mlock,html.mlock body{overflow:hidden!important}html{scrollbar-gutter:stable}.mc *{box-sizing:border-box}
@@ -1390,7 +1391,7 @@ let UC={t:null,o:0,b:null,n:[]},ADU={rows:null,err:'',busy:false,at:0,sk:'create
 const fmtDur=s=>{s=Math.round(s||0);if(s<=0)return '–';if(s<60)return '<1m';const m=Math.floor(s/60),h=Math.floor(m/60);return h?h+'h '+String(m%60).padStart(2,'0')+'m':m+'m'};
 const fmtWhen=(iso,dOnly)=>{if(!iso)return '–';const d=new Date(iso);if(dOnly&&!isNaN(d))return d.toLocaleDateString('en-US',{month:'short',day:'numeric'})+(d.getFullYear()===new Date().getFullYear()?'':' '+d.getFullYear());return isNaN(d)?'–':d.toLocaleDateString('en-US',{month:'short',day:'numeric'})+(d.getFullYear()===new Date().getFullYear()?'':' '+d.getFullYear())+', '+d.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'})};
 function ucBuyTip(){let tot=0,cl=0,pd=0;try{for(const k of POOLS()){const P=S.pools[k];tot+=NB(k);for(const i in P.names)if(P.names[i]){cl++;if(P.paid&&P.paid[i])pd++}}}catch(e){}const b=UC.b,pl=b+' player'+(b===1?'':'s');if(!tot)return pl+' '+(b===1?'has':'have')+' claimed boxes so far.';if(!cl)return 'No boxes have been claimed yet.';if(cl<tot)return pl+' '+(b===1?'has':'have')+' claimed '+cl+' of '+tot+' boxes so far'+(pd?' ('+pd+' paid).':'.');if(pd<tot)return 'All '+tot+' boxes are claimed by '+pl+'. '+(tot-pd)+' still unpaid.';return 'All '+tot+' boxes are claimed and paid for, by '+pl+'.'}
-const BUILD='1139';
+const BUILD='1140';
 function ucRender(){const h=document.querySelector('.ttl');if(!h)return;let p=$('ucp');if(UC.t==null){if(p)p.remove();return}if(!p){p=document.createElement('div');p.id='ucp';p.className='ucp';h.appendChild(p)}
 const nm=UC.n.slice(0,12).map(esc).join(', ')+(UC.n.length>12?' +'+(UC.n.length-12)+' more':'');
 const t1=UC.t+' account'+(UC.t===1?'':'s')+' created so far. Click for the list.';
