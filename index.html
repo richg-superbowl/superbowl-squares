@@ -464,7 +464,7 @@ const DOW=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 const fd=y=>{const[a,b,c]=y.split('-');return c+'-'+MON[b-1]+'-'+a+' ('+DOW[new Date(+a,b-1,+c).getDay()]+')'};
 const fdt=iso=>{const d=new Date(iso);let h=d.getHours();const ap=h>=12?'PM':'AM';h=h%12||12;return String(d.getDate()).padStart(2,'0')+'-'+MON[d.getMonth()]+'-'+d.getFullYear()+' ('+DOW[d.getDay()]+') '+h+':'+String(d.getMinutes()).padStart(2,'0')+' '+ap};
 const whoOf=(k,i)=>{const m=S.pools[k].meta[i];return m&&m.who||null};
-const dispName=w=>!w?'':((ADMIN||w.fn||(w.via&&w.fn==null)||(PRF.full&&w.email&&AU.user&&String(w.email).toLowerCase()===String(AU.user.email||'').toLowerCase()))?((w.first||'')+' '+(w.last||'')).trim():(w.first||'')+(w.last?' '+w.last[0].toUpperCase()+'.':''))+(w.via?' [via Admin]':'')+(w.deleted?' [account deleted]':'');
+const dispName=w=>!w?'':((ADMIN||OWNER||w.fn||(PRF.full&&w.email&&AU.user&&String(w.email).toLowerCase()===String(AU.user.email||'').toLowerCase()))?((w.first||'')+' '+(w.last||'')).trim():(w.first||'')+(w.last?' '+w.last[0].toUpperCase()+'.':''))+(w.via?' [via Admin]':'')+(w.deleted?' [account deleted]':'');
 const dnOf=(f,l)=>dispName({first:f,last:l});
 const searchText=(k,i)=>gtOn(k)&&!gv(k).names[i]?'':(S.pools[k].names[i]||'')+' '+dispName(whoOf(k,i));
 const fnHtml=(k,i)=>{const n=dispName(whoOf(k,i));return n?`<span class="fn">${esc(n)}</span>`:''};
@@ -1574,7 +1574,7 @@ let UC={t:null,o:0,b:null,n:[]},ADU={rows:null,err:'',busy:false,at:0,sk:'create
 const fmtDur=s=>{s=Math.round(s||0);if(s<=0)return '–';if(s<60)return '<1m';const m=Math.floor(s/60),h=Math.floor(m/60);return h?h+'h '+String(m%60).padStart(2,'0')+'m':m+'m'};
 const fmtWhen=(iso,dOnly)=>{if(!iso)return '–';const d=new Date(iso);if(dOnly&&!isNaN(d))return d.toLocaleDateString('en-US',{month:'short',day:'numeric'})+(d.getFullYear()===new Date().getFullYear()?'':' '+d.getFullYear());return isNaN(d)?'–':d.toLocaleDateString('en-US',{month:'short',day:'numeric'})+(d.getFullYear()===new Date().getFullYear()?'':' '+d.getFullYear())+', '+d.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'})};
 function ucBuyTip(){let tot=0,cl=0,pd=0;try{for(const k of POOLS()){const P=S.pools[k];tot+=NB(k);for(const i in P.names)if(P.names[i]){cl++;if(P.paid&&P.paid[i])pd++}}}catch(e){}const b=UC.b,pl=b+' player'+(b===1?'':'s')+' with an account',nt=' Boxes the admin entered for other players are included in the box count.';if(!tot)return pl+' '+(b===1?'has':'have')+' claimed boxes so far.';if(!cl)return 'No boxes have been claimed yet.';if(cl<tot)return cl+' of '+tot+' boxes are claimed so far'+(pd?' ('+pd+' paid)':'')+'. '+pl+(b===1?' holds':' hold')+' boxes.'+nt;if(pd<tot)return 'All '+tot+' boxes are claimed. '+(tot-pd)+' still unpaid. '+pl+(b===1?' holds':' hold')+' boxes.'+nt;return 'All '+tot+' boxes are claimed and paid for. '+pl+(b===1?' holds':' hold')+' boxes.'+nt}function claimedN(){let n=0;try{for(const k of POOLS()){const P=S.pools[k];for(const i in P.names)if(P.names[i])n++}}catch(e){}return n}
-const BUILD='1403',BUILT='2026-11-19T09:30:00-05:00';
+const BUILD='1404',BUILT='2026-11-19T10:05:00-05:00';
 function ucRender(){const h=document.querySelector('.ttl');if(!h)return;let p=$('ucp');if(UC.t==null){if(p)p.remove();return}if(!p){p=document.createElement('div');p.id='ucp';p.className='ucp';h.appendChild(p)}
 const nm=UC.n.slice(0,12).map(esc).join(', ')+(UC.n.length>12?' +'+(UC.n.length-12)+' more':'');
 const t1=UC.t+' account'+(UC.t===1?'':'s')+' created so far. Click for the list.';
