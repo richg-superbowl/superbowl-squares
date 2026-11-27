@@ -1011,10 +1011,15 @@ function avCrop(file){return new Promise((res,rej)=>{const url=URL.createObjectU
  const paint=()=>{clamp();const sc=s0*zm;img.style.width=(w*sc)+'px';img.style.height=(h*sc)+'px';img.style.left=ox+'px';img.style.top=oy+'px'};
  const setZ=z=>{const o=s0*zm,cx=(V/2-ox)/o,cy=(V/2-oy)/o;zm=Math.min(4,Math.max(1,z));const n=s0*zm;ox=V/2-cx*n;oy=V/2-cy*n;rg.value=zm;paint()};
  img.src=wurl;paint();
- const zf=(window.visualViewport&&window.visualViewport.scale>1.05&&zmCoarse())?window.visualViewport.scale:1;const pt=new Map();let dr=null,pz=null;const dist=()=>{const a=[...pt.values()];return Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y)||1};
- vp.addEventListener('pointerdown',e=>{pt.set(e.pointerId,{x:e.clientX,y:e.clientY});try{vp.setPointerCapture(e.pointerId)}catch(x){}if(pt.size===1){dr={x:e.clientX,y:e.clientY,ox,oy};pz=null}else if(pt.size===2){dr=null;pz={d:dist(),z:zm}}e.preventDefault()});
- vp.addEventListener('pointermove',e=>{if(!pt.has(e.pointerId))return;pt.set(e.pointerId,{x:e.clientX,y:e.clientY});if(pt.size>=2&&pz){setZ(pz.z*dist()/pz.d)}else if(dr&&pt.size===1){ox=dr.ox+(e.clientX-dr.x)*zf;oy=dr.oy+(e.clientY-dr.y)*zf;paint()}e.preventDefault()});
- const up=e=>{pt.delete(e.pointerId);pz=null;dr=null;if(pt.size===1){const a=[...pt.values()][0];dr={x:a.x,y:a.y,ox,oy}}};vp.addEventListener('pointerup',up);vp.addEventListener('pointercancel',up);vp.addEventListener('lostpointercapture',up);const clr=e=>{if(!e.touches||e.touches.length===0){pt.clear();pz=null;dr=null}};ov.addEventListener('touchend',clr,{passive:true});ov.addEventListener('touchcancel',clr,{passive:true});
+ const zf=(window.visualViewport&&window.visualViewport.scale>1.05&&zmCoarse())?window.visualViewport.scale:1;
+ let dr=null,pz=null;const td=t=>Math.hypot(t[0].clientX-t[1].clientX,t[0].clientY-t[1].clientY)||1;
+ const startFrom=t=>{if(t.length>=2){dr=null;pz={d:td(t),z:zm}}else if(t.length===1){pz=null;dr={x:t[0].clientX,y:t[0].clientY,ox,oy}}else{dr=null;pz=null}};
+ vp.addEventListener('touchstart',e=>{startFrom(e.touches);e.preventDefault()},{passive:false});
+ vp.addEventListener('touchmove',e=>{e.preventDefault();const t=e.touches;if(t.length>=2&&pz){setZ(pz.z*td(t)/pz.d)}else if(t.length===1&&dr){ox=dr.ox+(t[0].clientX-dr.x)*zf;oy=dr.oy+(t[0].clientY-dr.y)*zf;paint()}},{passive:false});
+ const tend=e=>{startFrom(e.touches);e.preventDefault()};vp.addEventListener('touchend',tend,{passive:false});vp.addEventListener('touchcancel',()=>{dr=null;pz=null},{passive:true});
+ vp.addEventListener('pointerdown',e=>{if(e.pointerType!=='mouse')return;dr={x:e.clientX,y:e.clientY,ox,oy};try{vp.setPointerCapture(e.pointerId)}catch(x){}e.preventDefault()});
+ vp.addEventListener('pointermove',e=>{if(e.pointerType!=='mouse'||!dr)return;ox=dr.ox+(e.clientX-dr.x)*zf;oy=dr.oy+(e.clientY-dr.y)*zf;paint()});
+ const up=e=>{if(e.pointerType==='mouse')dr=null};vp.addEventListener('pointerup',up);vp.addEventListener('pointercancel',up);vp.addEventListener('lostpointercapture',up);
  vp.addEventListener('wheel',e=>{e.preventDefault();setZ(zm*(e.deltaY<0?1.08:1/1.08))},{passive:false});rg.addEventListener('input',()=>setZ(+rg.value));rg.addEventListener('change',()=>setZ(+rg.value));ov.addEventListener('gesturestart',e=>e.preventDefault());
  const done=()=>{try{URL.revokeObjectURL(url)}catch(e){}ov.remove()};
  {const xb=ov.querySelector('.avc-x');let xf=false;const cx=()=>{if(xf)return;xf=true;done();const er=new Error('cancelled');er.cancel=true;rej(er)};xb.addEventListener('click',cx);xb.addEventListener('touchend',e=>{e.preventDefault();cx()},{passive:false})}
@@ -1699,7 +1704,7 @@ let UC={t:null,o:0,b:null,n:[]},ADU={rows:null,err:'',busy:false,at:0,sk:'create
 const fmtDur=s=>{s=Math.round(s||0);if(s<=0)return '–';if(s<60)return '<1m';const m=Math.floor(s/60),h=Math.floor(m/60);return h?h+'h '+String(m%60).padStart(2,'0')+'m':m+'m'};
 const fmtWhen=(iso,dOnly)=>{if(!iso)return '–';const d=new Date(iso);if(dOnly&&!isNaN(d))return d.toLocaleDateString('en-US',{month:'short',day:'numeric'})+(d.getFullYear()===new Date().getFullYear()?'':' '+d.getFullYear());return isNaN(d)?'–':d.toLocaleDateString('en-US',{month:'short',day:'numeric'})+(d.getFullYear()===new Date().getFullYear()?'':' '+d.getFullYear())+', '+d.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'})};
 function ucBuyTip(){let tot=0,cl=0,pd=0;try{for(const k of POOLS()){const P=S.pools[k];tot+=NB(k);for(const i in P.names)if(P.names[i]){cl++;if(P.paid&&P.paid[i])pd++}}}catch(e){}const b=UC.b,pl=b+' player'+(b===1?'':'s')+' with an account',nt=' Boxes the admin entered for other players are included in the box count.';if(!tot)return pl+' '+(b===1?'has':'have')+' claimed boxes so far.';if(!cl)return 'No boxes have been claimed yet.';if(cl<tot)return cl+' of '+tot+' boxes are claimed so far'+(pd?' ('+pd+' paid)':'')+'. '+pl+(b===1?' holds':' hold')+' boxes.'+nt;if(pd<tot)return 'All '+tot+' boxes are claimed. '+(tot-pd)+' still unpaid. '+pl+(b===1?' holds':' hold')+' boxes.'+nt;return 'All '+tot+' boxes are claimed and paid for. '+pl+(b===1?' holds':' hold')+' boxes.'+nt}function claimedN(){let n=0;try{for(const k of POOLS()){const P=S.pools[k];for(const i in P.names)if(P.names[i])n++}}catch(e){}return n}
-const BUILD='1654',BUILT='2026-11-19T23:50:00-05:00';
+const BUILD='1655',BUILT='2026-11-19T23:50:00-05:00';
 function ucRender(){const h=document.querySelector('.ttl');if(!h)return;let p=$('ucp');if(UC.t==null){if(p)p.remove();return}if(!p){p=document.createElement('div');p.id='ucp';p.className='ucp';h.appendChild(p)}
 const nm=UC.n.slice(0,12).map(esc).join(', ')+(UC.n.length>12?' +'+(UC.n.length-12)+' more':'');
 const t1=UC.t+' account'+(UC.t===1?'':'s')+' created so far. Click for the list.';
